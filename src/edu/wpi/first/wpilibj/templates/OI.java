@@ -1,4 +1,3 @@
-
 package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -6,10 +5,9 @@ public class OI
 {
     private static OI m_instance;
     
-    private Joystick m_leftStick;
-    private Joystick m_rightStick;
-    
-    private Joystick m_operatorStick;
+    private final Joystick m_leftStick;
+    private final Joystick m_rightStick;    
+    private final Joystick m_operatorStick;
         
     private OI()
     {
@@ -31,11 +29,12 @@ public class OI
     
     public double getRightY() {
         return m_rightStick.getY();
-    }
+    }    
     
     public boolean getLeftTrigger(){
         return m_leftStick.getTrigger();
     }
+    
     public boolean getRightTrigger(){
         return m_rightStick.getTrigger();
     }

@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package edu.wpi.first.wpilibj.templates;
-
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Talon;
 
@@ -17,7 +12,7 @@ public class Drivebase {
     
     private static Drivebase m_instance;
     
-    private OI m_oi;
+    private final OI m_oi;
     
     private final Talon m_leftDrive1;
     private final Talon m_leftDrive2;

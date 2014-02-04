@@ -4,7 +4,7 @@ package edu.wpi.first.wpilibj.templates;
 
 
 public class Constants {
-    //port numbers in sidecar for object initialization
+    //port numbers in computer/digtal/analog for object initialization
     final static int LEFT_JOYSTICK_PORT = 1;
     final static int RIGHT_JOYSTICK_PORT = 2;
     final static int OPERATOR_JOYSTICK_PORT = 3;
@@ -28,4 +28,5 @@ public class Constants {
     final static int RIGHT_SOLENOID_OUT = 2;
     final static int RIGHT_SOLENOID_IN = 1;
     
+    final static int CATCHER_ULTRASONIC_ANALOG_CHANNEL = 1;
 }

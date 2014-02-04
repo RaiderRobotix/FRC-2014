@@ -34,6 +34,7 @@ public class Bhari extends SimpleRobot {
         
         m_pressureSwitch = new DigitalInput(Constants.PRESSURE_SWITCH_PWM);
         m_compressor = new Relay(Constants.COMPRESSOR_RELAY, Relay.Direction.kForward);
+        
     }
     
     /**
@@ -59,6 +60,8 @@ public class Bhari extends SimpleRobot {
             } else {
                 m_compressor.set(Relay.Value.kOff);
             }
+            
+            //System.out.println("Ultrasonic: " + m_catcher.getUltrasonicValue());
         }
     }
     
