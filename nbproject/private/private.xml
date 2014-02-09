@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>src/edu/wpi/first/wpilibj/templates/Constants.java</url>
+            <bookmark id="1">
+                <name/>
+                <line>3</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/25-DS/Documents/NetBeansProjects/FRC-2014/src/edu/wpi/first/wpilibj/templates/Constants.java</file>
+            <file>file:/C:/Users/25-DS/Documents/NetBeansProjects/FRC-2014/src/edu/wpi/first/wpilibj/templates/Pickup.java</file>
+            <file>file:/C:/Users/25-DS/Documents/NetBeansProjects/FRC-2014/src/edu/wpi/first/wpilibj/templates/Bhari.java</file>
+            <file>file:/C:/Users/25-DS/Documents/NetBeansProjects/FRC-2014/src/edu/wpi/first/wpilibj/templates/OI.java</file>
+            <file>file:/C:/Users/25-DS/Documents/NetBeansProjects/FRC-2014/src/edu/wpi/first/wpilibj/templates/Catcher.java</file>
             <file>file:/C:/Users/25-DS/Documents/NetBeansProjects/FRC-2014/src/edu/wpi/first/wpilibj/templates/Drivebase.java</file>
         </group>
     </open-files>

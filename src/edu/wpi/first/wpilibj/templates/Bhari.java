@@ -23,6 +23,7 @@ public class Bhari extends SimpleRobot {
     OI m_OI;
     Drivebase m_drivebase;
     Catcher m_catcher;
+    Pickup m_pickup;
     
     DigitalInput m_pressureSwitch;
     Relay m_compressor;
@@ -31,10 +32,9 @@ public class Bhari extends SimpleRobot {
         m_OI = OI.getInstance();
         m_drivebase = Drivebase.getInstance();
         m_catcher = Catcher.getInstance();
-        
+        m_pickup = Pickup.getInstance();
         m_pressureSwitch = new DigitalInput(Constants.PRESSURE_SWITCH_PWM);
-        m_compressor = new Relay(Constants.COMPRESSOR_RELAY, Relay.Direction.kForward);
-        
+        m_compressor = new Relay(Constants.COMPRESSOR_RELAY, Relay.Direction.kForward); 
     }
     
     /**
@@ -44,30 +44,24 @@ public class Bhari extends SimpleRobot {
         while (isAutonomous() && isEnabled()) {
             m_drivebase.brakesOff();
         }
-    }
-
-    /**
-     * This function is called once each time the robot enters operator control.
-     */
+    }    
     public void operatorControl() {
         
         while (isOperatorControl() && isEnabled()) {
             m_drivebase.enableTeleopControls();
             m_catcher.enableTeleopControls();
-            
+            m_pickup.enableTeleopControls();
             if (!m_pressureSwitch.get()) {
                 m_compressor.set(Relay.Value.kOn);
             } else {
                 m_compressor.set(Relay.Value.kOff);
-            }
-            
-            //System.out.println("Ultrasonic: " + m_catcher.getUltrasonicValue());
+            }           
         }
-    }
-    
+    }    
     /**
      * This function is called once each time the robot enters test mode.
      */
+    
     public void test() {
     
     }
