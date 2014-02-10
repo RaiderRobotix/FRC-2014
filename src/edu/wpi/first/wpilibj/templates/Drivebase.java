@@ -1,13 +1,8 @@
-
-
 package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Talon;
 
-/**
- *
- * @author 25-DS
- */
+
 public class Drivebase {
     
     private static Drivebase m_instance;
@@ -61,11 +56,10 @@ public class Drivebase {
         m_rightDrive3.set(rightSpeed);
     }
     
-    public void enableTeleopControls() {
-        
-        if (m_oi.getRightTrigger()) {
+    public void enableTeleopControls(){         
+        if (m_oi.getLeftTrigger()) {
             brakesOn();
-        } else if (m_oi.getRightButton(3)) { // Right top button
+        } else if (m_oi.getLeftButton(2)) { // Right top button
             brakesOff();
         }
         

@@ -8,25 +8,33 @@ public class Constants {
     final static int LEFT_JOYSTICK_PORT = 1;
     final static int RIGHT_JOYSTICK_PORT = 2;
     final static int OPERATOR_JOYSTICK_PORT = 3;
-    
+    //Left Drive PWM Constants
     final static int LEFT_DRIVE_PWM1 = 1;
     final static int LEFT_DRIVE_PWM2 = 2;
     final static int LEFT_DRIVE_PWM3 = 3;
-    
+    //Right Drive PWM Constants
     final static int RIGHT_DRIVE_PWM1 = 4;
     final static int RIGHT_DRIVE_PWM2 = 5;
     final static int RIGHT_DRIVE_PWM3 = 6;
-    
+    //Brake PWM Constants
     final static int LEFT_BRAKE_PWM = 7;
     final static int RIGHT_BRAKE_PWM = 8;
-    
+    //Pickup Talon Constants
+    final static int LEFT_PICKUP_PWM= 9;
+    final static int RIGHT_PICKUP_PWM=10;
+   
+    //CATCHER SOLENOID
     final static int PRESSURE_SWITCH_PWM = 1;
     final static int COMPRESSOR_RELAY = 1;
-    
     final static int LEFT_SOLENOID_OUT = 4;
     final static int LEFT_SOLENOID_IN = 3;
     final static int RIGHT_SOLENOID_OUT = 2;
     final static int RIGHT_SOLENOID_IN = 1;
+    final static int PICKUP_SOLENOID_OUT = 6;
+    final static int PICKUP_SOLENOID_IN = 5;
+    final static int KICKER_SOLENOID = 7;
     
-    final static int CATCHER_ULTRASONIC_ANALOG_CHANNEL = 1;
+    //ULTRASONIC SENSOR
+    final static int CATCHER_SONIC = 1;
+   
 }

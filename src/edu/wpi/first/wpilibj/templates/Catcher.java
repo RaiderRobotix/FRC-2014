@@ -1,40 +1,36 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package edu.wpi.first.wpilibj.templates;
-
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Solenoid;
 
-/**
- *
- * @author 25-DS
- */
+
 public class Catcher {
     
     private static Catcher m_instance;
     
     private final OI m_oi;
-    
+        
     private final Solenoid m_leftNetExtended;
     private final Solenoid m_leftNetRetracted;
     private final Solenoid m_rightNetExtended;
     private final Solenoid m_rightNetRetracted;
+    private final AnalogChannel m_catcherSonic;
     
-    private final AnalogChannel m_ultrasonic;
+    private boolean enableAutoCatcher;
+    private boolean catcherIsOpen;
     
-    private Catcher() {
-        m_oi = OI.getInstance();
+    
+   private Catcher() {
+      m_oi = OI.getInstance();
         
-        m_leftNetExtended = new Solenoid(Constants.LEFT_SOLENOID_OUT);
-        m_leftNetRetracted = new Solenoid(Constants.LEFT_SOLENOID_IN);
-        m_rightNetExtended = new Solenoid(Constants.RIGHT_SOLENOID_OUT);
-        m_rightNetRetracted = new Solenoid(Constants.RIGHT_SOLENOID_IN);
-        
-        m_ultrasonic = new AnalogChannel(Constants.CATCHER_ULTRASONIC_ANALOG_CHANNEL);
+      m_leftNetExtended = new Solenoid(Constants.LEFT_SOLENOID_OUT);
+      m_leftNetRetracted = new Solenoid(Constants.LEFT_SOLENOID_IN);
+      m_rightNetExtended = new Solenoid(Constants.RIGHT_SOLENOID_OUT);
+      m_rightNetRetracted = new Solenoid(Constants.RIGHT_SOLENOID_IN);
+      
+      m_catcherSonic = new AnalogChannel(Constants.CATCHER_SONIC);
+
+      enableAutoCatcher = true; 
+      catcherIsOpen = false;
     }
     
     public static Catcher getInstance() {
@@ -45,25 +41,51 @@ public class Catcher {
     }
     
     public void enableTeleopControls() {
-        
-        
-        if (m_oi.getOperatorButton(6)) {
-            openLeftCatcher();
-        } else if (m_oi.getOperatorButton(7)) {
-            closeLeftCatcher();
-        } else if (m_oi.getOperatorButton(11)) {
-            openRightCatcher();
-        } else if (m_oi.getOperatorButton(10)) {
-            closeRightCatcher();
+
+        /* 
+        * Enable/Disable Auto-Catcher
+        */
+        if(m_oi.getRightButton(4)) {
+            enableAutoCatcher = true;
+        }
+        else if(m_oi.getRightButton(5)) {
+            enableAutoCatcher = false;
         }
         
-        if (m_oi.getOperatorTrigger()) {
+        /*
+        * Auto Catcher Logic
+        */
+        // catch the ball automaticaly
+        if(catcherIsOpen == true && enableAutoCatcher) {
+            System.out.println("Auto Catcher is enabled and catcher is open");
+            if(m_catcherSonic.getValue() <= 80) {
+                catcherIsOpen = false;
+                System.out.println("Sonic is less than 45");
+            }
+            else {
+                catcherIsOpen = true;
+            }
+        }
+        //if auto catcher is not enabled, use default controls
+        else {
+            if (m_oi.getRightTrigger()) {
+                catcherIsOpen = true;
+            } else if(m_oi.getRightButton(2)) {
+                catcherIsOpen = false;
+            }
+        }
+        
+        // Actually close or open the catcher based on flag
+        if(catcherIsOpen) {
             openLeftCatcher();
             openRightCatcher();
-        } else if(m_oi.getOperatorButton(2)) {
+        } 
+        else if(!catcherIsOpen) {
             closeLeftCatcher();
             closeRightCatcher();
         }
+               
+        System.out.println(m_catcherSonic.getValue());
     }
     
     public void closeLeftCatcher() {
@@ -74,6 +96,7 @@ public class Catcher {
     public void openLeftCatcher() {
         m_leftNetExtended.set(false);
         m_leftNetRetracted.set(true);
+        
     }
      
     public void closeRightCatcher() {
@@ -86,7 +109,6 @@ public class Catcher {
         m_rightNetRetracted.set(true);
     }
     
-    public int getUltrasonicValue() {
-        return m_ultrasonic.getValue();
-    }
+    
 }
+
