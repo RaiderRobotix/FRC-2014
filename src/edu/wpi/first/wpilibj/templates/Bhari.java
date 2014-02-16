@@ -20,6 +20,9 @@ import edu.wpi.first.wpilibj.SimpleRobot;
  */
 public class Bhari extends SimpleRobot {
     
+    Vision m_vision;
+    AutonController m_autonController;
+    
     OI m_OI;
     Drivebase m_drivebase;
     Catcher m_catcher;
@@ -28,34 +31,53 @@ public class Bhari extends SimpleRobot {
     DigitalInput m_pressureSwitch;
     Relay m_compressor;
     
+    Relay m_cameralight;
+    
     public Bhari() {
+        m_vision = Vision.getInstance();
+        m_autonController = AutonController.getInstance();
         m_OI = OI.getInstance();
         m_drivebase = Drivebase.getInstance();
         m_catcher = Catcher.getInstance();
         m_pickup = Pickup.getInstance();
         m_pressureSwitch = new DigitalInput(Constants.PRESSURE_SWITCH_PWM);
-        m_compressor = new Relay(Constants.COMPRESSOR_RELAY, Relay.Direction.kForward); 
+        m_compressor = new Relay(Constants.COMPRESSOR_RELAY, Relay.Direction.kForward);
+        m_cameralight = new Relay(Constants.CAMERA_LIGHT, Relay.Direction.kForward);
     }
     
     /**
      * This function is called once each time the robot enters autonomous mode.
      */
     public void autonomous() {
+        
+        m_cameralight.set(Relay.Value.kOn);
+        m_autonController.reset();
+        
         while (isAutonomous() && isEnabled()) {
             m_drivebase.brakesOff();
+            m_vision.robotInit();
+            m_vision.autonomous();
+            
+            //m_autonController.TestAuton();
+            
+            System.out.println("Left Encoder: " + m_drivebase.getLeftEncoderDistance());
+            System.out.println("Left PID: " + m_drivebase.getLeftEncoderPIDValue());
+            System.out.println("Right Encoder: " + m_drivebase.getRightEncoderDistance());
+            System.out.println("Right PID: " + m_drivebase.getRightEncoderPIDValue());
+            
+            //System.out.println(m_catcher.getUltrasonicValue());
         }
     }    
     public void operatorControl() {
-        
         while (isOperatorControl() && isEnabled()) {
-            m_drivebase.enableTeleopControls();
-            m_catcher.enableTeleopControls();
-            m_pickup.enableTeleopControls();
+            m_cameralight.set(Relay.Value.kOn);
+            m_OI.enableTeleopControls();
+            
             if (!m_pressureSwitch.get()) {
                 m_compressor.set(Relay.Value.kOn);
             } else {
                 m_compressor.set(Relay.Value.kOff);
-            }           
+            }
         }
     }    
     /**

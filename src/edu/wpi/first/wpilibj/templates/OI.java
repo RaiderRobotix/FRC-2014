@@ -8,12 +8,22 @@ public class OI
     private final Joystick m_leftStick;
     private final Joystick m_rightStick;    
     private final Joystick m_operatorStick;
+    
+    private final AutonController m_autonController;
+    private final Drivebase m_drivebase;
+    private final Pickup m_pickup;
+    private final Catcher m_catcher;
         
     private OI()
     {
       m_leftStick = new Joystick(Constants.LEFT_JOYSTICK_PORT);
       m_rightStick = new Joystick(Constants.RIGHT_JOYSTICK_PORT);
       m_operatorStick = new Joystick(Constants.OPERATOR_JOYSTICK_PORT);
+      
+      m_autonController = AutonController.getInstance();
+      m_drivebase = Drivebase.getInstance();
+      m_pickup = Pickup.getInstance();
+      m_catcher = Catcher.getInstance();
     }
     
     public static OI getInstance() {
@@ -23,12 +33,116 @@ public class OI
         return m_instance;
     }
     
+    public void enableTeleopControls() {
+        
+        // TODO: Add button for driver to disable compressor for 5 seconds.
+        
+        // ---------- RESET AUTON ----------
+        if (getLeftButton(7)) {
+            m_autonController.reset();
+        }
+        
+        // ---------- DRIVE TRAIN ----------
+        
+        // Brake Code
+        if (getLeftTrigger()) {
+            m_drivebase.brakesOn();
+        }
+        else if (getLeftButton(2)) {
+            m_drivebase.brakesOff();
+        }
+        
+        if (!m_drivebase.brakesAreOn()) {
+            m_drivebase.brakesOff();
+            m_drivebase.setSpeed(getLeftY(), getRightY());
+        }
+        else {
+            m_drivebase.setSpeed(0.0);
+        }       
+        
+        // Encoders
+        if (getRightButton(2)) {
+            m_drivebase.resetEncoders();
+        }
+        
+        // ---------- CATCHER ----------
+        
+        // Enable/Disable Auto-Catcher
+        //if(m_catcher.getRightButton(4)) {
+        //    enableAutoCatcher();
+        //}
+        //else if(getRightButton(5)) {
+            m_catcher.disableAutoCatcher();
+        //}
+        
+        // Auto Catcher Logic
+        if(m_catcher.isOpen() && m_catcher.autoCatcherEnabled()) {
+            System.out.println("Auto Catcher is enabled and catcher is open");
+            if(m_catcher.getUltrasonicValue() <= 80) {
+                m_catcher.closeCatcher();
+                System.out.println("Sonic is less than 45");
+            }
+        }
+        // If auto catcher is not enabled, use default controls
+        else {
+            if (getRightTrigger()) {
+                m_catcher.openCatcher();
+            } else if (getRightButton(2)) {
+                m_catcher.closeCatcher();
+            }
+        }
+        
+        // ---------- INTAKE ----------
+        
+        // TODO: Add a method that once the catcher closes, run the wheels for one second.
+
+        if (getOperatorButton(3)) {
+            m_pickup.openPickup();
+        }
+        else if (getOperatorButton(2)) {
+            m_pickup.closePickup();
+        }
+        
+        // Kicker Logic
+        if (m_pickup.isOpen()) {
+            if(getOperatorTrigger()) {
+                m_pickup.openKicker();
+            }
+            else {
+                m_pickup.closeKicker();
+            }
+        }
+        
+        // Pickup Wheels Logic
+        if (getOperatorButton(7)) {
+            m_pickup.runIntakeWheelsIn();
+        }
+        else if (getOperatorButton(6)){
+            m_pickup.runIntakeWheelsOut();      
+        }
+        else {
+            m_pickup.stopIntakeWheels();
+        }
+    }
+    
     public double getLeftY() {
-        return m_leftStick.getY();
+        double yval = m_leftStick.getY();
+        if (yval > -0.02 && yval < 0.02) {
+            return 0.0;
+        }
+        else {
+            return yval;
+        }
     }
     
     public double getRightY() {
-        return m_rightStick.getY();
+        double yval = m_rightStick.getY();
+        if (yval > -0.02 && yval < 0.02) {
+            return 0.0;
+        }
+        else {
+            return yval;
+        }
     }    
     
     public boolean getLeftTrigger(){
