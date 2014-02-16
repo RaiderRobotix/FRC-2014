@@ -10,6 +10,8 @@ package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SimpleRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.camera.AxisCameraException;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -33,6 +35,9 @@ public class Bhari extends SimpleRobot {
     
     Relay m_cameralight;
     
+    Timer m_autonTimer;
+    boolean m_targetFound;
+    
     public Bhari() {
         m_vision = Vision.getInstance();
         m_autonController = AutonController.getInstance();
@@ -43,6 +48,8 @@ public class Bhari extends SimpleRobot {
         m_pressureSwitch = new DigitalInput(Constants.PRESSURE_SWITCH_PWM);
         m_compressor = new Relay(Constants.COMPRESSOR_RELAY, Relay.Direction.kForward);
         m_cameralight = new Relay(Constants.CAMERA_LIGHT, Relay.Direction.kForward);
+        m_autonTimer = new Timer();
+        m_targetFound = false;
     }
     
     /**
@@ -51,24 +58,32 @@ public class Bhari extends SimpleRobot {
     public void autonomous() {
         
         m_cameralight.set(Relay.Value.kOn);
-        m_autonController.reset();
-        
+        m_autonTimer.start();
+        m_drivebase.brakesOff();
+
         while (isAutonomous() && isEnabled()) {
-            m_drivebase.brakesOff();
-            m_vision.robotInit();
-            m_vision.autonomous();
-            
-            //m_autonController.TestAuton();
-            
-            System.out.println("Left Encoder: " + m_drivebase.getLeftEncoderDistance());
-            System.out.println("Left PID: " + m_drivebase.getLeftEncoderPIDValue());
-            System.out.println("Right Encoder: " + m_drivebase.getRightEncoderDistance());
-            System.out.println("Right PID: " + m_drivebase.getRightEncoderPIDValue());
-            
-            //System.out.println(m_catcher.getUltrasonicValue());
+           // if (m_autonTimer.get() < 1.0) {
+                try {
+                    //m_targetFound = m_targetFound || m_vision.findHorizontalTargets();
+                    m_targetFound = m_vision.findHorizontalTargets();
+                } catch (AxisCameraException ex) {
+                    System.out.println("An error occured.");
+                    ex.printStackTrace();
+                }
+                System.out.println("Target found: " + m_targetFound);
+        //    } 
+        /*    else { // PUT ALL AUTONOMOUS ROUTINES IN HERE, BUT ONLY CALL ONE!!!!
+                if (m_autonTimer.get() > 5.0) {
+                    m_targetFound = true;
+                }
+                m_autonController.DirtySanchezJr(m_targetFound);
+            } */
         }
     }    
     public void operatorControl() {
+        m_autonTimer.stop();
+        m_autonTimer.reset();
+            
         while (isOperatorControl() && isEnabled()) {
             m_cameralight.set(Relay.Value.kOn);
             m_OI.enableTeleopControls();

@@ -1,5 +1,6 @@
 package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 
 public class OI
 {
@@ -13,6 +14,9 @@ public class OI
     private final Drivebase m_drivebase;
     private final Pickup m_pickup;
     private final Catcher m_catcher;
+    
+    private boolean m_spitOutSequenceActive;
+    private final Timer m_pickupTimer;
         
     private OI()
     {
@@ -24,6 +28,9 @@ public class OI
       m_drivebase = Drivebase.getInstance();
       m_pickup = Pickup.getInstance();
       m_catcher = Catcher.getInstance();
+      
+      m_pickupTimer = new Timer();
+      m_spitOutSequenceActive = false;
     }
     
     public static OI getInstance() {
@@ -104,17 +111,37 @@ public class OI
         }
         
         // Kicker Logic
-        if (m_pickup.isOpen()) {
+        /*if (m_pickup.isOpen()) {
             if(getOperatorTrigger()) {
                 m_pickup.openKicker();
             }
             else {
                 m_pickup.closeKicker();
             }
+        } else {
+            
+        }*/
+        
+        if (getOperatorTrigger()) {
+            m_spitOutSequenceActive = true;
+            m_pickupTimer.start();
+            m_pickupTimer.reset();
         }
         
-        // Pickup Wheels Logic
-        if (getOperatorButton(7)) {
+        if (m_spitOutSequenceActive) {
+            
+            m_pickup.openPickup();
+            
+            if (m_pickupTimer.get() > 0.2 && m_pickupTimer.get() <= 1.0) {
+                m_pickup.runIntakeWheelsOut();
+                m_pickup.openKicker();
+            } else if (m_pickupTimer.get() > 1.0) {
+                m_pickup.closeKicker();
+                m_spitOutSequenceActive = false;
+                m_pickupTimer.stop();
+            }
+        }
+        else if (getOperatorButton(7)) {
             m_pickup.runIntakeWheelsIn();
         }
         else if (getOperatorButton(6)){
