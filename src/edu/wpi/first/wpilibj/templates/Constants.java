@@ -24,8 +24,8 @@ public class Constants {
     final static int RIGHT_BRAKE_PWM = 8;
     
     // Pickup Talon Constants
-    final static int LEFT_PICKUP_PWM= 9;
-    final static int RIGHT_PICKUP_PWM=10;
+    final static int LEFT_PICKUP_PWM = 9;
+    final static int RIGHT_PICKUP_PWM =10;
    
     // CATCHER SOLENOID
     final static int PRESSURE_SWITCH_PWM = 1;

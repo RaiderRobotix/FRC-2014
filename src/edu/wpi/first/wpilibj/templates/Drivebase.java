@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 
-
 public class Drivebase {
     
     private static Drivebase m_instance;

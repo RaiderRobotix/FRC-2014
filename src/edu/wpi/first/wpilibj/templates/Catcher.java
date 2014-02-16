@@ -2,7 +2,6 @@ package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Solenoid;
 
-
 public class Catcher {
     
     private static Catcher m_instance;
@@ -51,7 +50,7 @@ public class Catcher {
         m_rightNetExtended.set(false);
         m_rightNetRetracted.set(true);
     }
-    
+
     public void openRightCatcher() {
         m_rightNetExtended.set(true);
         m_rightNetRetracted.set(false);

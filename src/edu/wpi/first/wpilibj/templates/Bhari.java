@@ -85,7 +85,8 @@ public class Bhari extends SimpleRobot {
         m_autonTimer.reset();
             
         while (isOperatorControl() && isEnabled()) {
-            m_cameralight.set(Relay.Value.kOn);
+
+            m_cameralight.set(Relay.Value.kOff);
             m_OI.enableTeleopControls();
             
             if (!m_pressureSwitch.get()) {

@@ -31,7 +31,7 @@ public class Pickup {
         m_pickupRight = new Talon(Constants.RIGHT_PICKUP_PWM);
         m_kicker = new Solenoid(Constants.KICKER_SOLENOID);
     }
-    
+
     public static Pickup getInstance() {
         if (m_instance == null) {
             m_instance = new Pickup();
