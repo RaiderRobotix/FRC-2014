@@ -47,6 +47,8 @@ public class OI
         // ---------- RESET AUTON ----------
         if (getLeftButton(7)) {
             m_autonController.reset();
+            m_drivebase.resetEncoders();
+            m_drivebase.resetGyro();
         }
         
         // ---------- DRIVE TRAIN ----------
@@ -66,11 +68,6 @@ public class OI
         else {
             m_drivebase.setSpeed(0.0);
         }       
-        
-        // Encoders
-        if (getRightButton(2)) {
-            m_drivebase.resetEncoders();
-        }
         
         // ---------- CATCHER ----------
         
@@ -110,17 +107,11 @@ public class OI
             m_pickup.closePickup();
         }
         
-        // Kicker Logic
-        /*if (m_pickup.isOpen()) {
-            if(getOperatorTrigger()) {
-                m_pickup.openKicker();
-            }
-            else {
-                m_pickup.closeKicker();
-            }
-        } else {
-            
-        }*/
+        // Kicker logic
+        
+        if (getOperatorButton(4)) {
+            m_pickup.closeKicker();
+        }
         
         if (getOperatorTrigger()) {
             m_spitOutSequenceActive = true;
@@ -132,10 +123,10 @@ public class OI
             
             m_pickup.openPickup();
             
-            if (m_pickupTimer.get() > 0.2 && m_pickupTimer.get() <= 1.0) {
+            if (m_pickupTimer.get() > 0.2 && m_pickupTimer.get() <= 1.2) {
                 m_pickup.runIntakeWheelsOut();
                 m_pickup.openKicker();
-            } else if (m_pickupTimer.get() > 1.0) {
+            } else if (m_pickupTimer.get() > 1.2) {
                 m_pickup.closeKicker();
                 m_spitOutSequenceActive = false;
                 m_pickupTimer.stop();
@@ -154,7 +145,7 @@ public class OI
     
     public double getLeftY() {
         double yval = m_leftStick.getY();
-        if (yval > -0.02 && yval < 0.02) {
+        if (yval > -0.1 && yval < 0.1) {
             return 0.0;
         }
         else {
@@ -164,7 +155,7 @@ public class OI
     
     public double getRightY() {
         double yval = m_rightStick.getY();
-        if (yval > -0.02 && yval < 0.02) {
+        if (yval > -0.1 && yval < 0.1) {
             return 0.0;
         }
         else {

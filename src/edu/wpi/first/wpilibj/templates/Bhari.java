@@ -8,6 +8,7 @@
 
 package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -33,10 +34,11 @@ public class Bhari extends SimpleRobot {
     DigitalInput m_pressureSwitch;
     Relay m_compressor;
     
-    Relay m_cameralight;
-    
     Timer m_autonTimer;
     boolean m_targetFound;
+    
+    DriverStation m_ds;
+    int m_numTimesTargetFound;
     
     public Bhari() {
         m_vision = Vision.getInstance();
@@ -47,9 +49,10 @@ public class Bhari extends SimpleRobot {
         m_pickup = Pickup.getInstance();
         m_pressureSwitch = new DigitalInput(Constants.PRESSURE_SWITCH_PWM);
         m_compressor = new Relay(Constants.COMPRESSOR_RELAY, Relay.Direction.kForward);
-        m_cameralight = new Relay(Constants.CAMERA_LIGHT, Relay.Direction.kForward);
         m_autonTimer = new Timer();
         m_targetFound = false;
+        m_ds = DriverStation.getInstance();
+        m_numTimesTargetFound = 0;
     }
     
     /**
@@ -57,27 +60,34 @@ public class Bhari extends SimpleRobot {
      */
     public void autonomous() {
         
-        m_cameralight.set(Relay.Value.kOn);
+        m_drivebase.turnCameraLightOn();
         m_autonTimer.start();
         m_drivebase.brakesOff();
 
         while (isAutonomous() && isEnabled()) {
-           // if (m_autonTimer.get() < 1.0) {
-                try {
-                    //m_targetFound = m_targetFound || m_vision.findHorizontalTargets();
-                    m_targetFound = m_vision.findHorizontalTargets();
-                } catch (AxisCameraException ex) {
-                    System.out.println("An error occured.");
-                    ex.printStackTrace();
-                }
-                System.out.println("Target found: " + m_targetFound);
-        //    } 
-        /*    else { // PUT ALL AUTONOMOUS ROUTINES IN HERE, BUT ONLY CALL ONE!!!!
-                if (m_autonTimer.get() > 5.0) {
-                    m_targetFound = true;
-                }
-                m_autonController.DirtySanchezJr(m_targetFound);
-            } */
+           
+            try {
+                m_targetFound = m_targetFound || m_vision.findHorizontalTargets();
+                //m_targetFound = m_vision.findHorizontalTargets();
+            } catch (AxisCameraException ex) {
+                System.out.println("An error occured.");
+                ex.printStackTrace();
+            }
+            System.out.println("Target found: " + m_targetFound);
+
+            if (m_targetFound && m_autonTimer.get() < 5.0) {
+                m_numTimesTargetFound++;
+            }
+            if (m_autonTimer.get() > 6.0) {
+                m_targetFound = true;
+            }
+
+            if (m_ds.getDigitalIn(1)) {
+                m_autonController.DoNothing();
+            }
+            else {
+                m_autonController.DriveStraightDeadReckon(m_targetFound);
+            }
         }
     }    
     public void operatorControl() {
@@ -86,7 +96,7 @@ public class Bhari extends SimpleRobot {
             
         while (isOperatorControl() && isEnabled()) {
 
-            m_cameralight.set(Relay.Value.kOff);
+            m_drivebase.turnCameraLightOff();
             m_OI.enableTeleopControls();
             
             if (!m_pressureSwitch.get()) {
@@ -94,6 +104,9 @@ public class Bhari extends SimpleRobot {
             } else {
                 m_compressor.set(Relay.Value.kOff);
             }
+            
+            //System.out.println("Catcher Ultrasonic: " + m_catcher.getUltrasonicValue());
+            //System.out.println("Gyro: " + m_drivebase.getGyroAngle());
         }
     }    
     /**

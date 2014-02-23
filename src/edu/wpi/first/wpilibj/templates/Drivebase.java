@@ -1,7 +1,10 @@
 package edu.wpi.first.wpilibj.templates;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
@@ -30,9 +33,14 @@ public class Drivebase {
     private final PIDController m_rightEncoderController2;
     
     private boolean m_isDrivingForward;
+    private boolean m_isDrivingStraight;
+    
+    private Gyro m_gyro;
     
     private Timer m_timer;
-        
+    
+    private Relay m_cameralight;
+    
     private Drivebase(){
         
         m_leftDrive1 = new Talon(Constants.LEFT_DRIVE_PWM1);
@@ -77,8 +85,14 @@ public class Drivebase {
         m_rightEncoder.setPIDSourceParameter(PIDSource.PIDSourceParameter.kDistance);
         
         m_isDrivingForward = false;
+        m_isDrivingStraight = false;
+        
+        m_gyro = new Gyro(Constants.GYRO_CHANNEL);
+        m_gyro.setSensitivity(Constants.GYRO_SENSITIVITY);
         
         m_timer = new Timer();
+        
+        m_cameralight = new Relay(Constants.CAMERA_LIGHT, Relay.Direction.kForward);        
     }
     
     public static Drivebase getInstance() {
@@ -103,6 +117,11 @@ public class Drivebase {
         m_rightDrive1.set(rightSpeed);
         m_rightDrive2.set(rightSpeed);
     }
+    
+    public void setRightSpeed(double speed) {
+        m_rightDrive1.set(speed);
+        m_rightDrive2.set(speed);
+    }    
     
     public void brakesOn() {
         m_leftBrake.set(0.6);
@@ -189,5 +208,90 @@ public class Drivebase {
         }
         
         return false;
+    }
+    
+    /**
+     * 
+     * @param setpoint In Inches
+     * @param tolerance
+     * @param finalTolerance - A tolerance distance in inches to stop adjusting at based on the gyro error
+     * @param p
+     * @return 
+     */
+    public boolean driveStraight(double setpoint, double tolerance, double finalTolerance) {
+        if (!m_isDrivingStraight)  {
+            resetEncoders();
+            setEncoderSetpoint(setpoint);
+            enableEncoderPid();
+            
+            m_gyro.reset();
+            m_isDrivingStraight = true;
+        }
+        
+        if (m_isDrivingStraight) {
+            double angleError = m_gyro.getAngle();
+            double leftDistance = m_leftEncoder.getDistance();
+            double rightDistance = m_rightEncoder.getDistance();
+            
+            double adjustment = (angleError * Constants.GYRO_P);
+          
+            if (Math.abs(adjustment) > 0.25) {
+                adjustment = (adjustment < 0) ? -0.25 : 0.25;
+            }
+            
+            // NOTE: FINAL TOLERANCE NEEDS TO BE THE SAME SIGN AS SETPOINT
+            if (leftDistance < setpoint - finalTolerance || rightDistance < setpoint - finalTolerance) {
+                adjustment = 0;
+            }
+
+            double leftSpeed = m_leftDrive1.get() + adjustment;
+            double rightSpeed = m_rightDrive1.get() - adjustment;
+            
+            if (leftSpeed > 1.0) {
+                leftSpeed = 1.0;
+            } else if (leftSpeed < -1.0) {
+                leftSpeed = -1.0;
+            }
+
+            if (rightSpeed > 1.0) {
+                rightSpeed = 1.0;
+            } else if (rightSpeed < -1.0) {
+                rightSpeed = -1.0;
+            }
+            
+            setSpeed(leftSpeed, rightSpeed);
+            
+            if (setpoint > 0) {
+                if (leftDistance >= setpoint || rightDistance >= setpoint) {
+                    disableEncoderPid();
+                    m_isDrivingStraight = false;
+                    return true;
+                }
+            } else {
+                if (leftDistance <= setpoint || rightDistance <= setpoint ) {
+                    disableEncoderPid();
+                    m_isDrivingStraight = false;
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    void resetGyro() {
+        m_gyro.reset();
+    }
+    
+    double getGyroAngle() {
+        return m_gyro.getAngle();
+    }
+    
+    void turnCameraLightOn() {
+        m_cameralight.set(Relay.Value.kOn);
+    }
+    
+    void turnCameraLightOff() {
+        m_cameralight.set(Relay.Value.kOff);
     }
 }
