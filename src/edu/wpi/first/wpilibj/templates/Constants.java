@@ -47,6 +47,8 @@ public class Constants {
     
     final static int BANNER_SENSOR_DIGITAL_IN = 10;
     
+    final static int AIR_PRESSURE_ANALOG_IN = 4;
+    
     // ENCODERS
     final static int LEFT_ENCODER_A = 11;
     final static int LEFT_ENCODER_B = 12;

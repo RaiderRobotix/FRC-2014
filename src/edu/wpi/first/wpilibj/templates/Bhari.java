@@ -7,6 +7,7 @@
 
 
 package edu.wpi.first.wpilibj.templates;
+import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Relay;
@@ -39,6 +40,8 @@ public class Bhari extends SimpleRobot {
     
     DigitalInput m_bannerSensor;
     
+    AnalogChannel m_airPressureSensor;
+    
     public Bhari() {
         m_autonController = AutonController.getInstance();
         m_OI = OI.getInstance();
@@ -48,9 +51,11 @@ public class Bhari extends SimpleRobot {
         m_pressureSwitch = new DigitalInput(Constants.PRESSURE_SWITCH_PWM);
         m_compressor = new Relay(Constants.COMPRESSOR_RELAY, Relay.Direction.kForward);
         m_autonTimer = new Timer();
+        m_autonTimer.reset();
         m_targetFound = false;
         m_ds = DriverStation.getInstance();
         m_bannerSensor = new DigitalInput(Constants.BANNER_SENSOR_DIGITAL_IN);
+        m_airPressureSensor = new AnalogChannel(Constants.AIR_PRESSURE_ANALOG_IN);
     }
     
     /**
@@ -62,8 +67,6 @@ public class Bhari extends SimpleRobot {
 
         while (isAutonomous() && isEnabled()) {
            
-            System.out.println("Target found: " + m_targetFound);
-
             if (m_autonTimer.get() > 6.0) {
                 m_targetFound = true;
             }
@@ -76,8 +79,9 @@ public class Bhari extends SimpleRobot {
                     m_autonController.DriveStraightDeadReckon(m_targetFound);
                 }
             } else {
-                m_targetFound = m_targetFound || m_bannerSensor.get();
+                m_targetFound = !m_bannerSensor.get();
             }
+            //System.out.println("Banner: " + !m_bannerSensor.get());
         }
     }
     
@@ -86,7 +90,7 @@ public class Bhari extends SimpleRobot {
         m_autonTimer.reset();
             
         while (isOperatorControl() && isEnabled()) {
-
+            //System.out.println("Banner: " + m_bannerSensor.get());
             m_OI.enableTeleopControls();
             
             if (!m_pressureSwitch.get()) {
@@ -95,6 +99,7 @@ public class Bhari extends SimpleRobot {
                 m_compressor.set(Relay.Value.kOff);
             }
             
+            //System.out.println("Pressure Voltage: " + m_airPressureSensor.getVoltage());
             //System.out.println("Catcher Ultrasonic: " + m_catcher.getUltrasonicValue());
             //System.out.println("Gyro: " + m_drivebase.getGyroAngle());
         }
