@@ -136,7 +136,7 @@ public class AutonController {
             }
         }
         else if (m_step == 4) {
-            if (distance > -160) {
+            if (distance > -166) {
                  m_drivebase.setSpeed(-0.30, -0.25);
             } else {
                 m_drivebase.setSpeed(0.0);
