@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.camera.AxisCameraException;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,7 +22,6 @@ import edu.wpi.first.wpilibj.camera.AxisCameraException;
  */
 public class Bhari extends SimpleRobot {
     
-    Vision m_vision;
     AutonController m_autonController;
     
     OI m_OI;
@@ -38,10 +36,10 @@ public class Bhari extends SimpleRobot {
     boolean m_targetFound;
     
     DriverStation m_ds;
-    int m_numTimesTargetFound;
+    
+    DigitalInput m_bannerSensor;
     
     public Bhari() {
-        m_vision = Vision.getInstance();
         m_autonController = AutonController.getInstance();
         m_OI = OI.getInstance();
         m_drivebase = Drivebase.getInstance();
@@ -52,51 +50,43 @@ public class Bhari extends SimpleRobot {
         m_autonTimer = new Timer();
         m_targetFound = false;
         m_ds = DriverStation.getInstance();
-        m_numTimesTargetFound = 0;
+        m_bannerSensor = new DigitalInput(Constants.BANNER_SENSOR_DIGITAL_IN);
     }
     
     /**
      * This function is called once each time the robot enters autonomous mode.
      */
     public void autonomous() {
-        
-        m_drivebase.turnCameraLightOn();
         m_autonTimer.start();
         m_drivebase.brakesOff();
 
         while (isAutonomous() && isEnabled()) {
            
-            try {
-                m_targetFound = m_targetFound || m_vision.findHorizontalTargets();
-                //m_targetFound = m_vision.findHorizontalTargets();
-            } catch (AxisCameraException ex) {
-                System.out.println("An error occured.");
-                ex.printStackTrace();
-            }
             System.out.println("Target found: " + m_targetFound);
 
-            if (m_targetFound && m_autonTimer.get() < 5.0) {
-                m_numTimesTargetFound++;
-            }
             if (m_autonTimer.get() > 6.0) {
                 m_targetFound = true;
             }
-
-            if (m_ds.getDigitalIn(1)) {
-                m_autonController.DoNothing();
-            }
-            else {
-                m_autonController.DriveStraightDeadReckon(m_targetFound);
+            
+            if (m_autonTimer.get() > 0.5) {
+                if (m_ds.getDigitalIn(1)) {
+                    m_autonController.DoNothing();
+                }
+                else {
+                    m_autonController.DriveStraightDeadReckon(m_targetFound);
+                }
+            } else {
+                m_targetFound = m_targetFound || m_bannerSensor.get();
             }
         }
-    }    
+    }
+    
     public void operatorControl() {
         m_autonTimer.stop();
         m_autonTimer.reset();
             
         while (isOperatorControl() && isEnabled()) {
 
-            m_drivebase.turnCameraLightOff();
             m_OI.enableTeleopControls();
             
             if (!m_pressureSwitch.get()) {

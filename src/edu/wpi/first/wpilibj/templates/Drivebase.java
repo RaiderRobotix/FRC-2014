@@ -39,8 +39,6 @@ public class Drivebase {
     
     private Timer m_timer;
     
-    private Relay m_cameralight;
-    
     private Drivebase(){
         
         m_leftDrive1 = new Talon(Constants.LEFT_DRIVE_PWM1);
@@ -90,9 +88,7 @@ public class Drivebase {
         m_gyro = new Gyro(Constants.GYRO_CHANNEL);
         m_gyro.setSensitivity(Constants.GYRO_SENSITIVITY);
         
-        m_timer = new Timer();
-        
-        m_cameralight = new Relay(Constants.CAMERA_LIGHT, Relay.Direction.kForward);        
+        m_timer = new Timer();      
     }
     
     public static Drivebase getInstance() {
@@ -285,13 +281,5 @@ public class Drivebase {
     
     double getGyroAngle() {
         return m_gyro.getAngle();
-    }
-    
-    void turnCameraLightOn() {
-        m_cameralight.set(Relay.Value.kOn);
-    }
-    
-    void turnCameraLightOff() {
-        m_cameralight.set(Relay.Value.kOff);
     }
 }

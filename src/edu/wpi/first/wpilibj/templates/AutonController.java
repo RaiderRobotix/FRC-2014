@@ -146,7 +146,6 @@ public class AutonController {
             }
         }
         else if (m_step == 5) {
-            m_drivebase.turnCameraLightOff();
             m_pickup.openPickup();
             if (m_timer.get() > 0.5) {
                 m_timer.reset();
